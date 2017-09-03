@@ -7,15 +7,15 @@
 
 const http = require('http');
 const fs = require('fs');
+const path = require('path');
 const console = require('console');
-const csvParse = require('csv-parse/lib/sync');
+const csvParse = require(path.join('csv-parse', 'lib', 'sync'));
 const babel = require('babel-core');
 
-const lexRoot = __dirname + '/lexicons';
-const webRoot = __dirname + '/src';
+const lexRoot = path.join(__dirname, 'lexicons');
+const webRoot = path.join(__dirname, 'src');
 
 http.createServer((req, resp) => {
-    // TODO: os-adaptive path
     // TODO: UTF-8 filename
     // TODO: better server
     if (req.url === '/lex/all') {
@@ -40,7 +40,7 @@ http.createServer((req, resp) => {
             }
         });
     } else {
-        let filename = webRoot + (req.url === '/' ? '/App.html' : req.url);
+        let filename = path.join(webRoot, (req.url === '/' ? 'App.html' : req.url.slice(1)));
         fs.readFile(filename, (err, data) => {
             if (err) {
                 resp.writeHeader(404);
