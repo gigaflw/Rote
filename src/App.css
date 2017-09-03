@@ -1,0 +1,58 @@
+#app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
+
+#screen {
+    margin-top: 60px;
+}
+
+.word-slot {
+    font-size: 70px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-left: 5%;
+    padding-right: 5%;
+    transition: font-size .1s, opacity .3s;
+}
+
+.word-slot.hidden {
+    font-size: 60px;
+    opacity: 0;
+}
+
+.word-slot.hidden:hover {
+    opacity: 1;
+}
+
+#panel {
+    margin-top: 30px;
+}
+
+#panel > ul {
+    font-size: 20px;
+    list-style: none;
+    margin: 10px auto;
+    user-select: none;
+}
+
+#panel li {
+    display: inline-block;
+    margin: 0 10px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: background .2s, color .2s;
+}
+
+#panel li.active {
+    border: solid 2px #bdd;
+}
+
+#panel li:hover {
+    background-color: #bdd;
+    color: #fff;
+}

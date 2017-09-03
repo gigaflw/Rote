@@ -1,0 +1,14 @@
+{
+  "name": "rote",
+  "version": "0.9.0",
+  "description": "Reciting, custom yet simple",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "gigaflw",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parse": "^1.2.1"
+  }
+}
