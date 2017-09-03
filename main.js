@@ -16,51 +16,99 @@ const mime = require('mime');
 const lexRoot = path.join(__dirname, 'lexicons');
 const webRoot = path.join(__dirname, 'src');
 
-http.createServer((req, resp) => {
-    // TODO: UTF-8 filename
-    // TODO: better server
-    if (req.url === '/lex/all') {
-        let files = fs.readdirSync(lexRoot);
-        let lexNames = files
-            .filter(f => f.endsWith('.csv'))
-            .map(f => ({name: f.slice(0, -4)}));
-
-        resp.writeHead(200, { 'Content-Type': mime.lookup('json')+';charset=utf-8' });
-        resp.end(JSON.stringify(lexNames));
-
-    } else if (req.url.match(/^\/lex\/.+$/)) {
-        let filename = req.url.match(/^\/lex\/(.+)$/)[1];
-        if (filename === 'default') filename = 'jp-alphabet';
-
-        fs.readFile(`${lexRoot}/${filename}.csv`, (err, data) => {
-            if (err) {
-                resp.writeHead(404);
-                resp.end(`"${filename}.csv" can not be found`);
-
-            } else {
-                let [header, ...entries] = csvParse(data);
-
-                resp.writeHead(200, { 'Content-Type': mime.lookup('json')+';charset=utf-8' });
-                resp.end(JSON.stringify({
-                    header, entries, name: filename,
-                }));
-            }
-        });
-    } else {
-        let filename = path.join(webRoot, (req.url === '/' ? 'App.html' : req.url.slice(1)));
+// HTTP response util
+function fileResponse(filename) {
+    filename = path.join(webRoot, filename);
+    return new Promise(resolve => {
         fs.readFile(filename, (err, data) => {
             if (err) {
-                resp.writeHeader(404);
-                resp.end("No file found");
-            } else if (filename.endsWith('.js')) {
-                resp.writeHead(200, { 'Content-Type': mime.lookup('js') });
-                resp.end(babel.transform(data, {"presets": ["latest"]}).code);
+                resolve([404, {}, `file '${filename}' not found`]);
             } else {
-                resp.writeHead(200, { 'Content-Type': mime.lookup(filename) });
-                resp.end(data);
+                if (filename.endsWith('.js')) {
+                    data = babel.transform(data, {"presets": ["latest"]}).code;
+                }
+                resolve([200, {'Content-Type': mime.lookup(filename)}, data]);
             }
         });
+    });
+}
+
+function JSONResponse(obj) {
+    return new Promise(resolve => resolve([
+            200,
+            {'Content-Type': mime.lookup('json') + ';charset=utf-8'},
+            JSON.stringify(obj)
+        ])
+    );
+}
+
+// router util
+const router = {
+    urls: [],
+    register(regex, handler) {
+        if (typeof regex === 'string') {
+            // if url is given a string, only identical url should be matched
+            regex = new RegExp(`^${regex}$`);
+        }
+        this.urls.push([regex, handler]);
     }
+};
+
+
+// register routers
+router.register('/', req => fileResponse('App.html'));
+
+router.register('/lex/all', req => {
+    let files = fs.readdirSync(lexRoot);
+    let lexNames = files
+        .filter(f => f.endsWith('.csv'))
+        .map(f => ({name: f.slice(0, -4)}));
+
+    return JSONResponse(lexNames);
+});
+
+router.register(/^\/lex\/(.+)$/, (req, filename) => {
+    if (filename === 'default') filename = 'jp-alphabet';
+    filename = filename + '.csv';
+
+    console.log(`finding lexicon "${filename}"`);
+    return new Promise(resolve => {
+        fs.readFile(`${lexRoot}/${filename}`, (err, data) => {
+            if (err) {
+                resolve([404, {}, `"${filename}" can not be found`]);
+                console.log(`"${filename}" can not be found`);
+            } else {
+                let [header, ...entries] = csvParse(data);
+                console.log(`"${filename}" parsed`);
+                resolve(JSONResponse({header, entries, name: filename}));
+            }
+        });
+    });
+});
+
+// server binding
+http.createServer((req, resp) => {
+    console.log(`request url "${req.url}"`);
+    for (let [regex, handler] of router.urls) {
+        if (req.url.match(regex)) {
+            let [_, ...args] = req.url.match(regex);
+            handler(req, ...args).then(
+                ([statusCode, header, data]) => {
+                    resp.writeHead(statusCode, header);
+                    resp.end(data);
+                }
+            );
+            return;
+        }
+    }
+
+    // unregistered url, try finding file from `webRoot`
+    fileResponse(req.url.slice(1)).then(([statusCode, header, data]) => {
+        resp.writeHead(statusCode, header);
+        resp.end(data);
+    });
 }).listen(14259);
 
-require('opener')("http://localhost:14259");
+
+// open web browser
+require('opener')("http://localhost:14259/");
