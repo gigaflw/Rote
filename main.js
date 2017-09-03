@@ -69,17 +69,16 @@ router.register('/lex/all', req => {
 
 router.register(/^\/lex\/(.+)$/, (req, filename) => {
     if (filename === 'default') filename = 'jp-alphabet';
-    filename = filename + '.csv';
 
-    console.log(`finding lexicon "${filename}"`);
+    console.log(`finding lexicon "${filename}.csv"`);
     return new Promise(resolve => {
-        fs.readFile(`${lexRoot}/${filename}`, (err, data) => {
+        fs.readFile(`${lexRoot}/${filename}.csv`, (err, data) => {
             if (err) {
-                resolve([404, {}, `"${filename}" can not be found`]);
-                console.log(`"${filename}" can not be found`);
+                resolve([404, {}, `"${filename}.csv" can not be found`]);
+                console.log(`"${filename}.csv" can not be found`);
             } else {
                 let [header, ...entries] = csvParse(data);
-                console.log(`"${filename}" parsed`);
+                console.log(`"${filename}.csv" parsed`);
                 resolve(JSONResponse({header, entries, name: filename}));
             }
         });

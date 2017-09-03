@@ -21,7 +21,6 @@
             if (lexicon === undefined) {
                 this.setLexicon('default');
             } else {
-                console.log(lexicon);
                 let {name, header, entries} = lexicon;
 
                 this.getCurDictName = () => name;
@@ -52,7 +51,6 @@
             if (this.getCurDictName && name === this.getCurDictName()) {
                 console.log(`Already in lexicon '${name}'`);
             }
-            console.log(name);
             return ajax('/lex/' + name).then(data => {
                 data = JSON.parse(data);
                 this.init(data);
