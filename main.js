@@ -9,6 +9,7 @@ const http = require('http');
 const fs = require('fs');
 const console = require('console');
 const csvParse = require('csv-parse/lib/sync');
+const babel = require('babel-core');
 
 const lexRoot = __dirname + '/lexicons';
 const webRoot = __dirname + '/src';
@@ -44,6 +45,8 @@ http.createServer((req, resp) => {
             if (err) {
                 resp.writeHeader(404);
                 resp.end("No file found");
+            } else if (filename.endsWith('.js')) {
+                resp.end(babel.transform(data, {"presets": ["latest"]}).code);
             } else {
                 resp.end(data);
             }
@@ -51,5 +54,4 @@ http.createServer((req, resp) => {
     }
 }).listen(14259);
 
-const opener = require('opener');
-opener("http://localhost:14259");
+require('opener')("http://localhost:14259");

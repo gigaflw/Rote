@@ -11,5 +11,9 @@
   "dependencies": {
     "csv-parse": "^1.2.1",
     "opener": "^1.4.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-latest": "^6.24.1"
   }
 }
