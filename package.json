@@ -4,11 +4,12 @@
   "description": "Reciting, custom yet simple",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node main.js"
   },
   "author": "gigaflw",
   "license": "ISC",
   "dependencies": {
-    "csv-parse": "^1.2.1"
+    "csv-parse": "^1.2.1",
+    "opener": "^1.4.3"
   }
 }

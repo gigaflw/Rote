@@ -13,7 +13,7 @@ const csvParse = require('csv-parse/lib/sync');
 const lexRoot = __dirname + '/lexicons';
 const webRoot = __dirname + '/src';
 
-const server = http.createServer((req, resp) => {
+http.createServer((req, resp) => {
     // TODO: os-adaptive path
     // TODO: UTF-8 filename
     // TODO: better server
@@ -49,4 +49,7 @@ const server = http.createServer((req, resp) => {
             }
         });
     }
-}).listen(12345);
+}).listen(14259);
+
+const opener = require('opener');
+opener("http://localhost:14259");
