@@ -4,7 +4,9 @@
   "description": "Reciting, custom yet simple",
   "main": "index.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node main.js",
+    "dev": "node main.js --dev",
+    "build": "node_modules/.bin/babel src -d lib --copy-files --presets=latest"
   },
   "author": "gigaflw",
   "license": "ISC",
@@ -15,6 +17,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
+    "babel-cli": "^6.26.0",
     "babel-preset-latest": "^6.24.1"
   }
 }

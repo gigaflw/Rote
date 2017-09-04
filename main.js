@@ -10,11 +10,13 @@ const fs = require('fs');
 const path = require('path');
 const console = require('console');
 const csvParse = require(path.join('csv-parse', 'lib', 'sync'));
-const babel = require('babel-core');
 const mime = require('mime');
 
+const __devMode = process.argv.includes('--dev');
+
 const lexRoot = path.join(__dirname, 'lexicons');
-const webRoot = path.join(__dirname, 'src');
+const webRoot = path.join(__dirname, __devMode ? 'src' : 'lib');
+
 
 // HTTP response util
 function fileResponse(filename) {
@@ -24,8 +26,9 @@ function fileResponse(filename) {
             if (err) {
                 resolve([404, {}, `file '${filename}' not found`]);
             } else {
-                if (filename.endsWith('.js')) {
-                    data = babel.transform(data, {"presets": ["latest"]}).code;
+                if (__devMode && filename.endsWith('.js')) {
+                    // real-time babel compilation, only for dev mode
+                    data = require('babel-core').transform(data, {"presets": ["latest"]}).code;
                 }
                 resolve([200, {'Content-Type': mime.lookup(filename)}, data]);
             }
