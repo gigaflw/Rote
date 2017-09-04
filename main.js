@@ -64,7 +64,7 @@ router.register('/', req => fileResponse('App.html'));
 router.register('/lex/all', req => {
     let files = fs.readdirSync(lexRoot);
     let lexNames = files
-        .filter(f => f.endsWith('.csv'))
+        .filter(f => f.endsWith('.txt'))
         .map(f => ({name: f.slice(0, -4)}));
 
     return JSONResponse(lexNames);
@@ -73,15 +73,15 @@ router.register('/lex/all', req => {
 router.register(/^\/lex\/(.+)$/, (req, filename) => {
     if (filename === 'default') filename = 'jp-alphabet';
 
-    console.log(`finding lexicon "${filename}.csv"`);
+    console.log(`finding lexicon "${filename}.txt"`);
     return new Promise(resolve => {
-        fs.readFile(`${lexRoot}/${filename}.csv`, (err, data) => {
+        fs.readFile(`${lexRoot}/${filename}.txt`, (err, data) => {
             if (err) {
-                resolve([404, {}, `"${filename}.csv" can not be found`]);
-                console.log(`"${filename}.csv" can not be found`);
+                resolve([404, {}, `"${filename}.txt" can not be found`]);
+                console.log(`"${filename}.txt" can not be found`);
             } else {
-                let [header, ...entries] = csvParse(data);
-                console.log(`"${filename}.csv" parsed`);
+                let [header, ...entries] = csvParse(data, {delimiter: '|'});
+                console.log(`"${filename}.txt" parsed`);
                 resolve(JSONResponse({header, entries, name: filename}));
             }
         });
