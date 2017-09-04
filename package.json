@@ -10,6 +10,10 @@
   },
   "author": "gigaflw",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gigaflw/Rote"
+  },
   "dependencies": {
     "csv-parse": "^1.2.1",
     "mime": "^1.4.0",
