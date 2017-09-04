@@ -96,7 +96,8 @@
             let headIndIncre = x => (x + 1) % headerCnt;
             let shownHeaderInd = 0;
             let hiddenHeaderInd = headIndIncre(shownHeaderInd);
-            let [shownWordSlot, hiddenWordSlot] = document.getElementsByClassName('word-slot');
+            let shownWordSlot = document.getElementsByClassName('word-slot')[0];
+            let hiddenWordSlot = document.getElementsByClassName('word-slot')[1];
 
             function toggleShownHeader() {
                 shownHeaderInd = headIndIncre(shownHeaderInd);
