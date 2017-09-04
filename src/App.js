@@ -61,17 +61,8 @@
 
     let UI = {
         init() {
-            let screen = document.getElementById('screen');
             let panel = document.getElementById('panel');
-            screen.innerHTML = panel.innerHTML = '';
-
-            function initScreen(barCnt) {
-                let str = '';
-                for (let i = 0; i < barCnt; ++i) {
-                    str += `<p><span class="word-slot hidden"></span></p>`;  // hidden by default
-                }
-                screen.innerHTML = str;
-            }
+            panel.innerHTML = '';
 
             function initPanelCommands(commands) {
                 let list = document.createElement('ul');
@@ -101,29 +92,60 @@
                 panel.appendChild(list);
             }
 
-            initScreen(app.getCurDictHeaders().length);
+
+            let headerCnt = app.getCurDictHeaders().length;
+            let headIndIncre = x => (x + 1) % headerCnt;
+            let shownHeaderInd = 0;
+            let hiddenHeaderInd = headIndIncre(shownHeaderInd);
+            let [shownWordSlot, hiddenWordSlot] = document.getElementsByClassName('word-slot');
+
+            function toggleShownHeader() {
+                shownHeaderInd = headIndIncre(shownHeaderInd);
+                if (shownHeaderInd === hiddenHeaderInd) shownHeaderInd = headIndIncre(shownHeaderInd);
+                setWord(app.curWord());
+            }
+
+            function toggleHiddenHeader() {
+                hiddenHeaderInd = headIndIncre(hiddenHeaderInd);
+                if (shownHeaderInd === hiddenHeaderInd) hiddenHeaderInd = headIndIncre(hiddenHeaderInd);
+                setWord(app.curWord());
+            }
+
+            function setWord(word) {
+                shownWordSlot.innerHTML = word[shownHeaderInd];
+                hiddenWordSlot.innerHTML = word[hiddenHeaderInd];
+            }
+
             initPanelCommands([
-                ...app.getCurDictHeaders().map(header => ({
-                    prompt: header,
-                    classList: ['disable-able'],
+                {
+                    prompt: app.getCurDictHeaders()[shownHeaderInd],
                     handler: event => {
-                        event.target.classList.toggle('active');
-                        this.toggleWordVisibility(
-                            Array.from(event.target.parentNode.childNodes).indexOf(event.target)
-                        )
+                        if (headerCnt === 0) {
+                            alert('词库为空！')
+                        } else if (headerCnt > 1) {
+                            toggleShownHeader();
+                            event.target.innerHTML = app.getCurDictHeaders()[shownHeaderInd];
+                        }
                     }
-                })), {
+                }, {
+                    prompt: app.getCurDictHeaders()[hiddenHeaderInd],
+                    handler: event => {
+                        if (headerCnt === 0) {
+                            alert('词库为空！')
+                        } else if (headerCnt > 1) {
+                            toggleHiddenHeader();
+                            event.target.innerHTML = app.getCurDictHeaders()[hiddenHeaderInd];
+                        }
+                    }
+                }, {
                     prompt: 'next',
-                    handler: event => this.setWord(app.nextWord()),
+                    handler: event => setWord(app.nextWord()),
                 }
             ]);
 
-            this.wordSlots = document.getElementsByClassName('word-slot');
-
             // make the first word slot visible
-            panel.querySelector('li').classList.add('active');
-            this.toggleWordVisibility(0);
-            this.setWord(app.nextWord());
+            // panel.querySelector('li').classList.add('active');
+            setWord(app.nextWord());
 
             // get a list of all available lexicons
             app.getAllDicts().then(data => {
@@ -138,20 +160,6 @@
                     }
                 }
             });
-        },
-
-        setWord(word) {
-            for (let ind = 0; ind < this.wordSlots.length; ++ind) {
-                this.wordSlots[ind].innerHTML = word[ind];
-            }
-        },
-
-        toggleWordVisibility(ind) {
-            if (ind >= this.wordSlots.length) {
-                throw RangeError(`${ind} out of range of word slots`)
-            } else {
-                this.wordSlots[ind].classList.toggle('hidden');
-            }
         },
     };
 

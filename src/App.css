@@ -6,36 +6,32 @@
 }
 
 #screen {
-    margin-top: 60px;
+    margin-top: 10vh;
 }
 
-.word-slot {
+#screen .word-slot {
     display: inline-block;
 
-    font-size: 70px;
+    font-size: 13vh;
     margin-top: 10px;
     margin-bottom: 10px;
-    padding-left: 5%;
-    padding-right: 5%;
+    padding-left: 10vw;
+    padding-right: 10vw;
 
     transition: font-size .1s, opacity .3s, max-height, .3s;
 }
 
-.word-slot.hidden {
-    font-size: 60px;
+#screen .word-slot.hidden {
+    font-size: 10vh;
     opacity: 0;
 }
 
-.word-slot.hidden:hover {
+#screen .word-slot.hidden:hover {
     opacity: 1;
 }
 
-.word-slot.erased {
-    max-height: 0;
-}
-
 #panel {
-    margin-top: 30px;
+    margin-top: 5vh;
 }
 
 #panel > ul {
@@ -63,31 +59,4 @@
 #panel li:hover {
     background-color: #bdd;
     color: #fff;
-}
-
-#panel li.disable-able {
-    position: relative; /* for #panel li.disable-able::before's absolute position */
-}
-
-#panel li.disable-able::before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    height: 12px;
-    width: 12px;
-    border-radius: 50%;
-    border: 2px solid #bdd;
-    transform: scale(0.1) rotate(45deg);
-    transition: transform .1s;
-    background-color: #fff;
-    background-image:
-            radial-gradient(transparent 60%, #fff 61%),
-            linear-gradient(to top, transparent 40%, #bdd 41%, #bdd 59%, transparent 60%),
-            linear-gradient(to left, transparent 40%, #bdd 41%, #bdd 59%, transparent 60%);
-}
-
-#panel li.disable-able:hover::before {
-    transform: rotate(45deg);
 }
