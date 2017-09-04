@@ -10,12 +10,15 @@
 }
 
 .word-slot {
+    display: inline-block;
+
     font-size: 70px;
     margin-top: 10px;
     margin-bottom: 10px;
     padding-left: 5%;
     padding-right: 5%;
-    transition: font-size .1s, opacity .3s;
+
+    transition: font-size .1s, opacity .3s, max-height, .3s;
 }
 
 .word-slot.hidden {
@@ -25,6 +28,10 @@
 
 .word-slot.hidden:hover {
     opacity: 1;
+}
+
+.word-slot.erased {
+    max-height: 0;
 }
 
 #panel {
@@ -40,6 +47,7 @@
 
 #panel li {
     display: inline-block;
+    position: relative;
     margin: 0 10px;
     cursor: pointer;
     border: 2px solid transparent;
@@ -55,4 +63,31 @@
 #panel li:hover {
     background-color: #bdd;
     color: #fff;
+}
+
+#panel li.disable-able {
+    position: relative; /* for #panel li.disable-able::before's absolute position */
+}
+
+#panel li.disable-able::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    border: 2px solid #bdd;
+    transform: scale(0.1) rotate(45deg);
+    transition: transform .1s;
+    background-color: #fff;
+    background-image:
+            radial-gradient(transparent 60%, #fff 61%),
+            linear-gradient(to top, transparent 40%, #bdd 41%, #bdd 59%, transparent 60%),
+            linear-gradient(to left, transparent 40%, #bdd 41%, #bdd 59%, transparent 60%);
+}
+
+#panel li.disable-able:hover::before {
+    transform: rotate(45deg);
 }

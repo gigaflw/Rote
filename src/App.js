@@ -79,6 +79,9 @@
                 for (let cmd of commands) {
                     let el = document.createElement('li');
                     el.innerHTML = cmd.prompt;
+                    if (cmd.classList) {
+                        cmd.classList.forEach(cls => el.classList.add(cls))
+                    }
                     el.addEventListener('click', cmd.handler);
                     list.appendChild(el);
                 }
@@ -102,6 +105,7 @@
             initPanelCommands([
                 ...app.getCurDictHeaders().map(header => ({
                     prompt: header,
+                    classList: ['disable-able'],
                     handler: event => {
                         event.target.classList.toggle('active');
                         this.toggleWordVisibility(
