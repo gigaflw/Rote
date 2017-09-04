@@ -1,3 +1,4 @@
+'use strict';
 {
     Array.prototype.shuffle = function () {
         for (let i = 0; i < this.length; ++i) {
@@ -6,7 +7,7 @@
         }
     };
 
-    function ajax(url) {
+    let ajax = url => {
         return new Promise((resolve, reject) => {
             let client = new XMLHttpRequest();
             client.open('GET', url);
@@ -21,7 +22,7 @@
             };
             client.send();
         });
-    }
+    };
 
     let app = {
         init(lexicon = undefined) {
@@ -38,7 +39,7 @@
                 this.curWord = () => entries[wordInd];
 
                 let traverseMethod = 'random';  // available methods: 'default', 'random', 'shuffle'
-                let shuffleTable =  entries.map((val, ind) => ind);
+                let shuffleTable = entries.map((val, ind) => ind);
                 let shuffledInd = 0;
                 this.getAllTraverseMethods = () => ['random', 'shuffle', 'default'];
                 this.getTraverseMethod = () => traverseMethod;
@@ -194,4 +195,5 @@
     };
 
     app.init();
+    console.log('Rote is running!');
 }

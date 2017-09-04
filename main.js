@@ -114,3 +114,4 @@ http.createServer((req, resp) => {
 
 // open web browser
 require('opener')("http://localhost:14259/");
+console.log(`Rote v${require('./package.json').version} is running!`);
