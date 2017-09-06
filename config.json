@@ -1,4 +1,5 @@
 {
+  "defaultLexicon": "jp-verb",
   "plugins": [
     {
       "name": "jp-verb-conjugation",

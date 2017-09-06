@@ -12,6 +12,7 @@ const url = require('url');
 const csvParse = require('csv-parse/lib/sync');
 const mime = require('mime');
 
+const config = require('./config.json');
 const plugins = require('./config.json').plugins
     .filter(plugin => plugin.active)
     .map(
@@ -93,7 +94,7 @@ router.register('/lex/all', req => {
 });
 
 router.register(/^\/lex\/(.+)$/, (req, filename) => {
-    if (filename === 'default') filename = 'jp-verb';
+    if (filename === 'default') filename = config.defaultLexicon;
 
     console.log(`finding lexicon "${filename}.txt"`);
     return new Promise(resolve => {
