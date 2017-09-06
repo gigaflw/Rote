@@ -9,13 +9,13 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
-const csvParse = require(path.join('csv-parse', 'lib', 'sync'));
+const csvParse = require('csv-parse/lib/sync');
 const mime = require('mime');
 
 const plugins = require('./config.json').plugins
     .filter(plugin => plugin.active)
     .map(
-        plugin => [plugin.name, require(`./plugins/${plugin.name}/index.js`)] // TODO: windows sep needed?
+        plugin => [plugin.name, require(`./plugins/${plugin.name}/index.js`)]
     );
 
 const __devMode = process.argv.includes('--dev');
@@ -26,6 +26,11 @@ const MAIN_PAGE = 'App.html';
 const MAIN_SCRIPT = 'App.js';
 
 // HTTP response util
+function Response(statusCode, header, data) {
+    return new Promise(resolve => resolve([statusCode, header, data]));
+}
+
+
 function fileResponse(filename) {
     filename = path.join(WEB_ROOT, filename);
     return new Promise(resolve => {
@@ -88,7 +93,7 @@ router.register('/lex/all', req => {
 });
 
 router.register(/^\/lex\/(.+)$/, (req, filename) => {
-    if (filename === 'default') filename = 'jp-alphabet';
+    if (filename === 'default') filename = 'jp-verb';
 
     console.log(`finding lexicon "${filename}.txt"`);
     return new Promise(resolve => {
@@ -121,11 +126,11 @@ plugins.forEach(([name, plugin]) => {
                     result = api();
                 }
             } catch (err) {
-                return new Promise(resolve => resolve([500, {}, err.message]));  // TODO: make this a new type of response
+                return Response(500, {}, err.message);
             }
             return JSONResponse(result);
         } else {
-            return new Promise(resolve => resolve([404, {}, `'${req.url}' invalid`]));  // TODO: make this a new type of response
+            return Response(404, {}, `'${req.url}' invalid`);
         }
     });
 });

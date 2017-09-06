@@ -89,7 +89,6 @@ let util = {
         }
     },
     naiForm(verb) { // verb needs to be in dictionary form
-        console.log(verb);
         if (verb === 'くる' || verb === '来る') {
             return '来ない';
         } else {
