@@ -5,4 +5,4 @@ lib/
 
 lexicons/
 venv/
-build.sh
+build/
