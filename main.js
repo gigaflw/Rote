@@ -104,7 +104,10 @@ router.register(/^\/lex\/(.+)$/, (req, filename) => {
             } else {
                 let [header, ...entries] = csvParse(data, {delimiter: '|'});
                 console.log(`"${filename}.txt" parsed`);
-                resolve(JSONResponse({header, entries, name: filename}));
+                resolve(JSONResponse({
+                    header, entries, name: filename,
+                    groupSize: Math.min(config.pagination, entries.length)
+                }));
             }
         });
     });

@@ -45,17 +45,22 @@ window.ro$e.app = {
         if (lexicon === undefined) {
             this.setLexicon('default');
         } else {
-            let {name, header, entries} = lexicon;
+            let {name, header, entries, groupSize} = lexicon;
 
             this.getCurLexiconName = () => name;
             this.getCurLexiconHeaders = () => header;
+            this.getGroupSize = () => groupSize;
+            this.getGroupCnt = () => Math.ceil(entries.length / groupSize);
 
-            let wordInd = 0;
+            let wordInd = 0, groupInd = 0;
 
-            this.curWord = () => entries[wordInd];
+            this.curWord = () => entries[Math.min(wordInd + groupInd * groupSize, entries.length - 1)];
+            this.curGroupInd = () => groupInd;
+            this.increGroupInd = () => groupInd = Math.min(groupInd + 1, this.getGroupCnt() - 1);
+            this.decreGroupInd = () => groupInd = Math.max(groupInd - 1, 0);
 
             let traverseMethod = 'random';  // available methods: 'default', 'random', 'shuffle'
-            let shuffleTable = entries.map((val, ind) => ind);
+            let shuffleTable = Array.from({length: groupSize}).map((val, ind) => ind);
             let shuffledInd = 0;
             this.getAllTraverseMethods = () => ['random', 'shuffle', 'default'];
             this.getTraverseMethod = () => traverseMethod;
@@ -70,15 +75,15 @@ window.ro$e.app = {
                     alert('词库耗尽')
                 } else {
                     if (traverseMethod === 'default') {
-                        wordInd = (wordInd + 1) % entries.length;
+                        wordInd = (wordInd + 1) % groupSize;
                     } else if (traverseMethod === 'random') {
                         let nextInd;
                         do {
-                            nextInd = Math.floor(Math.random() * (entries.length))
+                            nextInd = Math.floor(Math.random() * groupSize)
                         } while (nextInd === wordInd);
                         wordInd = nextInd;
                     } else if (traverseMethod === 'shuffle') {
-                        shuffledInd = (shuffledInd + 1) % entries.length;
+                        shuffledInd = (shuffledInd + 1) % groupSize;
                         if (shuffledInd === 0) shuffleTable.shuffle();
                         wordInd = shuffleTable[shuffledInd];
                     }
@@ -157,6 +162,7 @@ window.ro$e.UI = {
             document.getElementById('hidden').innerHTML = app.getCurLexiconHeaders()[hiddenHeaderInd];
         }
 
+        // basic commands
         this.addPanelCommands([
             {   // command for visible word slot setting
                 prompt: app.getCurLexiconHeaders()[shownHeaderInd],
@@ -201,7 +207,36 @@ window.ro$e.UI = {
             hiddenWordSlot.innerHTML = word[hiddenHeaderInd];
         }
 
-        setWord(app.nextWord());
+        setWord(app.curWord());
+
+        // UI for pagination
+        function updatePagination() {
+            document.getElementById('group-ind-prompt').innerHTML =
+                `<code>${app.curGroupInd() + 1} / ${app.getGroupCnt()}</code>`;
+        }
+
+        this.addPanelCommands([
+            {
+                prompt: '&#9668', // 
+                handler() {
+                    app.decreGroupInd();
+                    setWord(app.curWord());
+                    updatePagination();
+                }
+            }, {
+                prompt: `<code>${app.curGroupInd() + 1} / ${app.getGroupCnt()}</code>`,
+                attr: {id: 'group-ind-prompt'}
+            }, {
+                prompt: '&#9658', //
+                handler() {
+                    app.increGroupInd();
+                    setWord(app.curWord());
+                    updatePagination();
+                }
+            }, {
+                prompt: `（每组 ${app.getGroupSize()} 词）`,
+            }
+        ]);
 
         // UI for lexicons
         function setLexiconNameClass() {
@@ -223,7 +258,7 @@ window.ro$e.UI = {
                 prompt: lex.name,
                 attr: {class: 'lex-name'},
                 handler: event => app.setLexicon(lex.name).then(() => {
-                    setWord(app.nextWord());
+                    setWord(app.curWord());
                     setLexiconNameClass();
                     resetPanelCommandHeaders();
                 }),
