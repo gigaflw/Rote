@@ -52,7 +52,7 @@
     transition: background .2s, color .2s;
 }
 
-#panel li.active {
+#panel li.bordered {
     border: solid 2px #bdd;
 }
 

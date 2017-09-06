@@ -113,7 +113,6 @@ router.register(/^\/lex\/(.+)$/, (req, filename) => {
 // plugin api
 plugins.forEach(([name, plugin]) => {
     router.register(new RegExp(`^/${name}/(.+?)(\\?.+)?$`), (req, apiName) => {
-        console.log(`api ${req.url} is called`);
         let api = plugin[apiName]; // FIXME: client can visit every property regardless of api safety
         if (typeof api === 'function') {
             let parse = url.parse(req.url, true);  // 'true' means to parse the query string to a object

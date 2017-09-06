@@ -1,6 +1,7 @@
 'use strict';
 
 console.log('jp-verb-conjugation plugin added');
+
 !function () {
     let curForm = '';
 
@@ -11,13 +12,17 @@ console.log('jp-verb-conjugation plugin added');
         });
     }
 
-    window.addEventListener('load', () => ajax('jp-verb-conjugation/all').then(allForms => {
+    document.addEventListener('ro$eReady', () => ajax('jp-verb-conjugation/all').then(allForms => {
             allForms = JSON.parse(allForms);
             window.ro$e.UI.addPanelCommands(allForms.map(form => {
                 return {
                     prompt: form.prompt,
                     attr: {class: 'jp-verb-conj'},
                     handler(event) {
+                        Array.from(document.getElementsByClassName('jp-verb-conj')).forEach(
+                            el => el.classList.remove('bordered')
+                        );
+                        event.target.classList.add('bordered');
                         curForm = form.api;
                         updateTransform(form.api);
                     }
@@ -29,10 +34,11 @@ console.log('jp-verb-conjugation plugin added');
             transform.innerHTML = `<p id="jp-verb-transform"></p>`;
             cmdPanel.appendChild(transform);
 
-                alert('there');
             document.getElementById('next').addEventListener('click', () => {
-                alert('here');
-                updateTransform(curForm)
+                Array.from(document.getElementsByClassName('jp-verb-conj')).forEach(
+                    el => el.classList.remove('bordered')
+                );
+                document.getElementById('jp-verb-transform').innerHTML = '';
             });
         })
     );

@@ -6,6 +6,9 @@ window.ro$e = {};
 
 window.ro$e is the global object of this app
 -------------
+If a plugin is to change the UI,
+it should wait until the 'ro$eReady' event is dispatched on `document` element
+-------------
 available API:
 
 // basic
@@ -205,9 +208,9 @@ window.ro$e.UI = {
             let curLex = app.getCurLexiconName();
             for (let el of document.getElementsByClassName('lex-name')) {
                 if (el.innerHTML === curLex) {
-                    el.classList.add('active');
+                    el.classList.add('bordered');
                 } else {
-                    el.classList.remove('active');
+                    el.classList.remove('bordered');
                 }
             }
         }
@@ -227,6 +230,9 @@ window.ro$e.UI = {
             })));
 
             setLexiconNameClass();
+
+            // App initialization ends, plugins can start
+            document.dispatchEvent(new Event('ro$eReady'));
         });
     }
 };
