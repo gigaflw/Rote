@@ -31,7 +31,6 @@ function Response(statusCode, header, data) {
     return new Promise(resolve => resolve([statusCode, header, data]));
 }
 
-
 function fileResponse(filename) {
     filename = path.join(WEB_ROOT, filename);
     return new Promise(resolve => {

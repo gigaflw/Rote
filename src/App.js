@@ -27,7 +27,12 @@ window.ro$e.UI.addPanelCommands(commands)
  {
     prompt: <text_on_button>,
     handler: <handler_of_click_event>,
-    classList: <class_list_of_button>, (optional)
+    attr: {
+        class: 'class1 class2',
+        id: 'foo',
+        dataBaz: 'bar',
+        ...
+    } (optional)
  }
 --------------
  */
@@ -102,8 +107,10 @@ window.ro$e.UI = {
         for (let cmd of commands) {
             let el = document.createElement('li');
             el.innerHTML = cmd.prompt;
-            if (cmd.classList) {
-                cmd.classList.forEach(cls => el.classList.add(cls));
+            if (cmd.attr) {
+                for (let [k, v] of Object.entries(cmd.attr)) {
+                    el.setAttribute(k, v);
+                }
             }
             el.addEventListener('click', cmd.handler);
             list.appendChild(el);
@@ -143,14 +150,14 @@ window.ro$e.UI = {
 
         function resetPanelCommandHeaders() {
             // called after lexicon has changed to update header in command panel
-            let list = document.getElementById('panel').firstChild;
-            list.childNodes[0].innerHTML = app.getCurLexiconHeaders()[shownHeaderInd];
-            list.childNodes[1].innerHTML = app.getCurLexiconHeaders()[hiddenHeaderInd];
+            document.getElementById('shown').innerHTML = app.getCurLexiconHeaders()[shownHeaderInd];
+            document.getElementById('hidden').innerHTML = app.getCurLexiconHeaders()[hiddenHeaderInd];
         }
 
         this.addPanelCommands([
             {   // command for visible word slot setting
                 prompt: app.getCurLexiconHeaders()[shownHeaderInd],
+                attr: {id: 'shown'},
                 handler: event => {
                     if (headerCnt === 0) {
                         alert('词库为空！')
@@ -161,6 +168,7 @@ window.ro$e.UI = {
                 }
             }, { // command for hidden word slot setting
                 prompt: app.getCurLexiconHeaders()[hiddenHeaderInd],
+                attr: {id: 'hidden'},
                 handler: event => {
                     if (headerCnt === 0) {
                         alert('词库为空！')
@@ -171,6 +179,7 @@ window.ro$e.UI = {
                 }
             }, {  // command for next word
                 prompt: 'next',
+                attr: {id: 'next'},
                 handler: event => setWord(app.nextWord()),
             }, {  // command for traverse order
                 prompt: app.getTraverseMethod(),
@@ -202,13 +211,14 @@ window.ro$e.UI = {
                 }
             }
         }
+
         app.getAllLexicons().then(data => {
             // get a list of all available lexicons
             let lexicons = JSON.parse(data);
 
             this.addPanelCommands(lexicons.map(lex => ({
                 prompt: lex.name,
-                classList: ['lex-name'],
+                attr: {class: 'lex-name'},
                 handler: event => app.setLexicon(lex.name).then(() => {
                     setWord(app.nextWord());
                     setLexiconNameClass();
