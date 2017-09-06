@@ -3,7 +3,8 @@
 console.log('jp-verb-conjugation plugin added');
 
 !function () {
-    let curForm = '';
+    let curFormApiName = '';
+    let keepUpdateTransform = false;
 
     function updateTransform(form) {
         let hiragana = window.ro$e.app.curWord()[1]; // FIXME: always assume the second entry of jp lexicon is hiragana
@@ -23,7 +24,7 @@ console.log('jp-verb-conjugation plugin added');
                             el => el.classList.remove('bordered')
                         );
                         event.target.classList.add('bordered');
-                        curForm = form.api;
+                        curFormApiName = form.api;
                         updateTransform(form.api);
                     }
                 }
@@ -31,14 +32,24 @@ console.log('jp-verb-conjugation plugin added');
 
             let cmdPanel = document.getElementsByClassName('jp-verb-conj')[0].parentNode;
             let transform = document.createElement('li');
-            transform.innerHTML = `<p id="jp-verb-transform"></p>`;
+            transform.innerHTML = `<span id="jp-verb-transform"></span>`;
             cmdPanel.appendChild(transform);
 
+            document.getElementById('jp-verb-transform').addEventListener('click', event => {
+                transform.classList.toggle('bordered');
+                keepUpdateTransform = !keepUpdateTransform;
+            });
+
             document.getElementById('next').addEventListener('click', () => {
-                Array.from(document.getElementsByClassName('jp-verb-conj')).forEach(
-                    el => el.classList.remove('bordered')
-                );
-                document.getElementById('jp-verb-transform').innerHTML = '';
+                if (keepUpdateTransform) {
+                    updateTransform(curFormApiName);
+                } else {
+                    Array.from(document.getElementsByClassName('jp-verb-conj')).forEach(
+                        el => el.classList.remove('bordered')
+                    );
+
+                    document.getElementById('jp-verb-transform').innerHTML = '';
+                }
             });
         })
     );
