@@ -39,6 +39,9 @@
     list-style: none;
     margin: 10px auto;
     user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
 }
 
 #panel li {
